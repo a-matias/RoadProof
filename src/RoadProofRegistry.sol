@@ -10,12 +10,14 @@ import {RoadProofAuthorization} from "./RoadProofAuthorization.sol";
 ///         de sus informes mediante hashes.
 /// @dev Los informes completos se almacenan fuera de la blockchain.
 ///      Las autorizaciones se consultan en RoadProofAuthorization.
-contract RoadProofRegistry is Ownable {
+
+contract RoadProofRegistry {
     // ---------------------------------------------------------------
     // TIPOS DE DATOS
     // ---------------------------------------------------------------
 
     /// @notice Resultados posibles de una revisión técnica.
+
     enum Resultado {
         APTO,
         CONDICIONAL,
@@ -23,6 +25,7 @@ contract RoadProofRegistry is Ownable {
     }
 
     /// @notice Información registrada de una revisión técnica.
+
     struct Revision {
         bytes32 informeHash;
         bytes32 vehiculoRefHash;
@@ -79,6 +82,7 @@ contract RoadProofRegistry is Ownable {
     /// @param resultado Resultado de la revisión.
     /// @param informeHash Hash del informe registrado.
     /// @param timestamp Momento del registro en blockchain.
+
     event RevisionRegistrada(
         bytes32 indexed revisionId,
         bytes32 indexed tallerId,
@@ -96,11 +100,11 @@ contract RoadProofRegistry is Ownable {
     /// @notice Inicializa el registro y define el contrato de autorización.
     /// @param direccionAutorizacion Dirección de RoadProofAuthorization.
     /// @dev El desplegador se convierte en propietario inicial del registro.
-    constructor(address direccionAutorizacion) Ownable(msg.sender) {
-        if (direccionAutorizacion == address(0)) {
+
+    constructor(address direccionAutorizacion) {
+        if (direccionAutorizacion == address(0) || direccionAutorizacion.code.length == 0) {
             revert ContratoAutorizacionInvalido();
         }
-
         contratoAutorizacion = RoadProofAuthorization(direccionAutorizacion);
     }
 
@@ -117,6 +121,7 @@ contract RoadProofRegistry is Ownable {
     /// @param vehiculoRefHash Hash de una referencia del vehículo.
     /// @param tallerId Identificador del taller.
     /// @param resultado Resultado de la revisión técnica.
+
     function registrarRevision(
         bytes32 revisionId,
         bytes32 informeHash,
@@ -172,6 +177,7 @@ contract RoadProofRegistry is Ownable {
     /// @param revisionId Identificador de la revisión.
     /// @param hashCalculado Hash calculado del informe que se verifica.
     /// @return integro True si el hash coincide con el registrado.
+
     function verificarIntegridad(bytes32 revisionId, bytes32 hashCalculado) external view returns (bool integro) {
         if (!revisionExiste[revisionId]) {
             revert RevisionInexistente();

@@ -281,4 +281,12 @@ contract RoadProofRegistryTest is Test {
 
         new RoadProofRegistry(address(0));
     }
+
+    function testNoPermiteCrearRegistryConDireccionSinCodigo() public {
+        address direccionSinContrato = makeAddr("direccionSinContrato");
+
+        vm.expectRevert(RoadProofRegistry.ContratoAutorizacionInvalido.selector);
+
+        new RoadProofRegistry(direccionSinContrato);
+    }
 }
